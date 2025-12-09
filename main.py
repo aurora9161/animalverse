@@ -1,64 +1,65 @@
 import os
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 import asyncio
 import logging
 from utils import JSONDatabase, GuildSettings
 
-# Load environment variables
-load_dotenv()
+# ==================== CONFIGURATION ====================
+# All configuration here - .env file is OPTIONAL
+# You can put DISCORD_TOKEN here directly or use .env
 
-# ==================== CONFIGURATION FROM .ENV ====================
+# Discord Bot Token - PUT HERE or in .env
+DISCORD_TOKEN = "your_token_here_or_leave_empty_to_use_env"
 
-# Required
-DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+# If empty above, will try to load from .env
+if not DISCORD_TOKEN or DISCORD_TOKEN == "your_token_here_or_leave_empty_to_use_env":
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+        DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+    except:
+        pass
+
 if not DISCORD_TOKEN:
-    raise ValueError("❌ DISCORD_TOKEN not found in .env file!")
+    raise ValueError("\n❌ DISCORD_TOKEN not found!\nEither:\n1. Put token in main.py line 10\n2. Create .env file with DISCORD_TOKEN=your_token")
 
-# Bot Settings
-BOT_PREFIX = os.getenv('BOT_PREFIX', '!')
-BOT_STATUS = os.getenv('BOT_STATUS', 'watching 🐾 AnimalVerse')
+# ==================== BOT SETTINGS ====================
+BOT_PREFIX = "!"                    # Command prefix
+BOT_STATUS = "watching 🐾 AnimalVerse"  # Bot status
 
-# API Keys (Optional)
-CATS_API_KEY = os.getenv('CATS_API_KEY', '')
-DOGS_API_KEY = os.getenv('DOGS_API_KEY', '')
+# ==================== FEATURES ====================
+FEATURE_DAILY_ENABLED = True        # Daily animal notifications
+FEATURE_STATS_ENABLED = True        # User statistics tracking
+FEATURE_SLASH_COMMANDS = True       # Slash commands (/)
 
-# Daily Animals
-DEFAULT_DAILY_TIME = os.getenv('DEFAULT_DAILY_TIME', '08:00')
-ENABLE_DAILY_BY_DEFAULT = os.getenv('ENABLE_DAILY_BY_DEFAULT', 'false').lower() == 'true'
+# ==================== DATABASE ====================
+DATABASE_DIR = "data"               # Where to save JSON files
 
-# Animal Selection
-DEFAULT_ANIMALS = os.getenv('DEFAULT_ANIMALS', '').split(',') if os.getenv('DEFAULT_ANIMALS') else []
-API_CALL_DELAY = float(os.getenv('API_CALL_DELAY', '0.1'))
-API_TIMEOUT = int(os.getenv('API_TIMEOUT', '5'))
+# ==================== LOGGING ====================
+LOG_LEVEL = "INFO"                  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_FILE = "bot.log"                # Log file path
 
-# Database
-DATABASE_DIR = os.getenv('DATABASE_DIR', 'data')
-AUTO_BACKUP_DB = os.getenv('AUTO_BACKUP_DB', 'true').lower() == 'true'
+# ==================== API KEYS (OPTIONAL) ====================
+# Leave empty strings to use fallback images
+CATS_API_KEY = ""                   # From thecatapi.com
+DOGS_API_KEY = ""                   # From thedogapi.com
 
-# Logging
-LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
-LOG_FILE = os.getenv('LOG_FILE', 'bot.log')
+# ==================== PERFORMANCE ====================
+API_TIMEOUT = 5                     # API timeout in seconds
+API_CALL_DELAY = 0.1                # Delay between API calls
+CACHE_TIMEOUT = 3600                # Cache duration in seconds
+MAX_CONCURRENT_REQUESTS = 5         # Max parallel API requests
 
-# Features
-FEATURE_DAILY_ENABLED = os.getenv('FEATURE_DAILY_ENABLED', 'true').lower() == 'true'
-FEATURE_STATS_ENABLED = os.getenv('FEATURE_STATS_ENABLED', 'true').lower() == 'true'
-FEATURE_SLASH_COMMANDS = os.getenv('FEATURE_SLASH_COMMANDS', 'true').lower() == 'true'
-MAX_DAILY_ANIMALS = int(os.getenv('MAX_DAILY_ANIMALS', '19'))
+# ==================== COGS TO LOAD ====================
+LOAD_COGS = ["animals", "daily", "info"]  # Which cogs to load, or None for all
 
-# Performance
-LOAD_COGS_LIST = os.getenv('LOAD_COGS', '').split(',') if os.getenv('LOAD_COGS') else None
-CACHE_TIMEOUT = int(os.getenv('CACHE_TIMEOUT', '3600'))
-MAX_CONCURRENT_REQUESTS = int(os.getenv('MAX_CONCURRENT_REQUESTS', '5'))
+# ==================== BOT OWNER ====================
+BOT_OWNER_ID = None                 # Your Discord user ID (optional)
 
-# Optional
-BOT_OWNER_ID = os.getenv('BOT_OWNER_ID', '')
-SUPPORT_SERVER = os.getenv('SUPPORT_SERVER', 'https://github.com/aurora9161/animalverse')
-SOURCE_CODE_URL = os.getenv('SOURCE_CODE_URL', 'https://github.com/aurora9161/animalverse')
+# ==================== END CONFIGURATION ====================
 
-# ==================== LOGGING SETUP ====================
-
+# Setup logging
 logging.basicConfig(
     level=getattr(logging, LOG_LEVEL),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -69,42 +70,35 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger('AnimalVerse')
-logger.info(f"\n📋 AnimalVerse Configuration Loaded:")
+logger.info(f"\n📋 AnimalVerse Configuration:")
 logger.info(f"  Prefix: {BOT_PREFIX}")
 logger.info(f"  Status: {BOT_STATUS}")
-logger.info(f"  Daily Animals: {'✅ Enabled' if FEATURE_DAILY_ENABLED else '❌ Disabled'}")
-logger.info(f"  Statistics: {'✅ Enabled' if FEATURE_STATS_ENABLED else '❌ Disabled'}")
-logger.info(f"  Slash Commands: {'✅ Enabled' if FEATURE_SLASH_COMMANDS else '❌ Disabled'}")
-logger.info(f"  API Keys: Cat={'✅' if CATS_API_KEY else '❌'} Dog={'✅' if DOGS_API_KEY else '❌'}")
+logger.info(f"  Daily: {'✅' if FEATURE_DAILY_ENABLED else '❌'}")
+logger.info(f"  Stats: {'✅' if FEATURE_STATS_ENABLED else '❌'}")
+logger.info(f"  Slash Commands: {'✅' if FEATURE_SLASH_COMMANDS else '❌'}")
 logger.info(f"  Database: {DATABASE_DIR}")
+logger.info(f"  API Keys: Cat={'✅' if CATS_API_KEY else '❌'} Dog={'✅' if DOGS_API_KEY else '❌'}")
 
-# ==================== BOT INITIALIZATION ====================
-
+# Initialize bot
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
 bot = commands.Bot(command_prefix=BOT_PREFIX, intents=intents)
 
-# Store configuration in bot for access in cogs
+# Store configuration in bot for cogs to access
 bot.config = {
     'prefix': BOT_PREFIX,
     'status': BOT_STATUS,
     'cats_api_key': CATS_API_KEY,
     'dogs_api_key': DOGS_API_KEY,
-    'default_daily_time': DEFAULT_DAILY_TIME,
-    'enable_daily_by_default': ENABLE_DAILY_BY_DEFAULT,
-    'default_animals': DEFAULT_ANIMALS,
     'api_timeout': API_TIMEOUT,
     'database_dir': DATABASE_DIR,
     'feature_daily': FEATURE_DAILY_ENABLED,
     'feature_stats': FEATURE_STATS_ENABLED,
     'feature_slash': FEATURE_SLASH_COMMANDS,
-    'max_daily_animals': MAX_DAILY_ANIMALS,
     'cache_timeout': CACHE_TIMEOUT,
     'bot_owner_id': BOT_OWNER_ID,
-    'support_server': SUPPORT_SERVER,
-    'source_code': SOURCE_CODE_URL,
 }
 
 # Initialize database
@@ -114,7 +108,7 @@ guild_settings = GuildSettings(db)
 @bot.event
 async def on_ready():
     logger.info(f'\n✅ Bot is online as {bot.user}')
-    logger.info(f'📋 Bot ID: {bot.user.id}')
+    logger.info(f'📍 Bot ID: {bot.user.id}')
     logger.info(f'👥 Guilds: {len(bot.guilds)}')
     
     # Set bot status
@@ -133,16 +127,12 @@ async def on_ready():
         except Exception as e:
             logger.error(f'Error syncing commands: {e}')
     else:
-        logger.info('⚠️  Slash commands disabled in config')
+        logger.info('⚠️  Slash commands disabled')
 
 @bot.event
 async def on_guild_join(guild):
-    logger.info(f'📍 Joined guild: {guild.name} (ID: {guild.id})')
+    logger.info(f'📝 Joined guild: {guild.name} (ID: {guild.id})')
     guild_settings.initialize_guild(guild.id)
-    
-    # Apply default daily settings if enabled
-    if ENABLE_DAILY_BY_DEFAULT:
-        logger.info(f'🐾 Applying default daily settings to {guild.name}')
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -159,7 +149,7 @@ async def on_command_error(ctx, error):
         await ctx.send(f"❌ An error occurred: {str(error)[:100]}")
 
 async def load_cogs():
-    """Load cogs based on configuration"""
+    """Load cogs"""
     cogs_dir = 'cogs'
     if not os.path.exists(cogs_dir):
         os.makedirs(cogs_dir)
@@ -167,19 +157,7 @@ async def load_cogs():
     available_cogs = [f[:-3] for f in os.listdir(cogs_dir) if f.endswith('.py') and not f.startswith('_')]
     
     # Determine which cogs to load
-    if LOAD_COGS_LIST:
-        cogs_to_load = [c.strip() for c in LOAD_COGS_LIST if c.strip()]
-    else:
-        cogs_to_load = available_cogs
-    
-    # Filter by feature flags
-    if not FEATURE_DAILY_ENABLED and 'daily' in cogs_to_load:
-        logger.info('⚠️  Skipping daily cog (disabled in config)')
-        cogs_to_load.remove('daily')
-    
-    if not FEATURE_STATS_ENABLED and 'info' in cogs_to_load:
-        logger.info('⚠️  Skipping info cog (disabled in config)')
-        cogs_to_load.remove('info')
+    cogs_to_load = LOAD_COGS if LOAD_COGS else available_cogs
     
     logger.info(f'\n🔧 Loading cogs: {cogs_to_load}')
     

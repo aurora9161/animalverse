@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import asyncio
+from utils import JSONDatabase, GuildSettings
 
 # Load environment variables
 load_dotenv()
@@ -13,6 +14,10 @@ intents.message_content = True
 intents.members = True
 
 bot = commands.Bot(command_prefix=os.getenv('BOT_PREFIX', '!'), intents=intents)
+
+# Initialize database
+db = JSONDatabase()
+guild_settings = GuildSettings(db)
 
 @bot.event
 async def on_ready():
@@ -26,6 +31,12 @@ async def on_ready():
         print(f'❌ Error syncing commands: {e}\n')
 
 @bot.event
+async def on_guild_join(guild):
+    """Initialize guild settings when bot joins a new guild"""
+    print(f'📍 Joined guild: {guild.name} (ID: {guild.id})')
+    guild_settings.initialize_guild(guild.id)
+
+@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send("❌ Command not found! Use `!help` to see all commands.")
@@ -33,8 +44,10 @@ async def on_command_error(ctx, error):
         await ctx.send(f"❌ Missing argument: {error.param}")
     elif isinstance(error, commands.MissingPermissions):
         await ctx.send("❌ You don't have permission to use this command!")
+    elif isinstance(error, commands.BotMissingPermissions):
+        await ctx.send(f"❌ I don't have permission to do that: {', '.join(error.missing_perms)}")
     else:
-        await ctx.send(f"❌ An error occurred: {error}")
+        await ctx.send(f"❌ An error occurred: {str(error)[:100]}")
 
 async def load_cogs():
     """Load all cogs from the cogs directory"""
@@ -52,7 +65,10 @@ async def load_cogs():
 
 async def main():
     async with bot:
+        print('🚀 Starting AnimalVerse bot...')
+        print('📁 Loading cogs...\n')
         await load_cogs()
+        print('\n📡 Connecting to Discord...\n')
         await bot.start(os.getenv('DISCORD_TOKEN'))
 
 if __name__ == '__main__':

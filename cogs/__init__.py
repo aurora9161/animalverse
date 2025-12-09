@@ -1,0 +1,1 @@
+"""AnimalVerse Cogs Package"""

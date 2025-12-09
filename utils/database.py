@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime
 
 class JSONDatabase:
-    """Simple JSON-based database manager"""
+    """Simple JSON-based database manager with configurable directory"""
 
     def __init__(self, db_dir: str = 'data'):
         self.db_dir = Path(db_dir)
@@ -25,12 +25,18 @@ class JSONDatabase:
                 return json.load(f)
         except json.JSONDecodeError:
             return {}
+        except Exception as e:
+            print(f"Error reading {collection}: {e}")
+            return {}
 
     def write(self, collection: str, data: Dict[str, Any]) -> None:
         """Write entire collection"""
-        path = self._get_path(collection)
-        with open(path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
+        try:
+            path = self._get_path(collection)
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+        except Exception as e:
+            print(f"Error writing {collection}: {e}")
 
     def get(self, collection: str, key: str, default: Any = None) -> Any:
         """Get single value from collection"""
@@ -140,18 +146,18 @@ class GuildSettings:
             del settings[key]
             self.db.set(self.collection, str(guild_id), settings)
 
-    def initialize_guild(self, guild_id: int) -> None:
+    def initialize_guild(self, guild_id: int, config: Dict = None) -> None:
         """Initialize default settings for a guild"""
         if not self.db.exists(self.collection, str(guild_id)):
             default_settings = {
                 'daily_animal_enabled': False,
                 'daily_animal_channel': None,
-                'daily_animal_time': '08:00',  # HH:MM format
+                'daily_animal_time': config.get('default_daily_time', '08:00') if config else '08:00',
                 'daily_animal_hour': 8,
                 'daily_animal_minute': 0,
                 'last_daily_animal': None,
-                'animal_types': [],  # Empty means all animals
-                'prefix': '!',
+                'animal_types': config.get('default_animals', []) if config else [],
+                'prefix': config.get('prefix', '!') if config else '!',
                 'created_at': datetime.now().isoformat()
             }
             self.db.set(self.collection, str(guild_id), default_settings)

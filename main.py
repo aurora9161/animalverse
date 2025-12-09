@@ -38,6 +38,7 @@ BOT_STATUS = "watching 🐾 AnimalVerse"  # Bot status
 FEATURE_DAILY_ENABLED = True        # Daily animal notifications
 FEATURE_STATS_ENABLED = True        # User statistics tracking
 FEATURE_SLASH_COMMANDS = True       # Slash commands (/)
+FEATURE_DM_SUPPORT = True           # Allow commands in DMs
 
 # ==================== DATABASE ====================
 DATABASE_DIR = "data"               # Where to save JSON files
@@ -111,6 +112,7 @@ logger.info(f"  Status: {BOT_STATUS}")
 logger.info(f"  Daily Animals: {'✅' if FEATURE_DAILY_ENABLED else '❌'}")
 logger.info(f"  Statistics: {'✅' if FEATURE_STATS_ENABLED else '❌'}")
 logger.info(f"  Slash Commands: {'✅' if FEATURE_SLASH_COMMANDS else '❌'}")
+logger.info(f"  DM Support: {'✅' if FEATURE_DM_SUPPORT else '❌'}")
 logger.info(f"  API Keys: Cat={'✅' if CATS_API_KEY else '❌'} Dog={'✅' if DOGS_API_KEY else '❌'}")
 logger.info(f"  Database: {DATABASE_DIR}")
 logger.info(f"  Log Level: {LOG_LEVEL}")
@@ -122,7 +124,8 @@ intents.message_content = True
 intents.members = True
 intents.guilds = True
 intents.guild_messages = True
-intents.dm_messages = True
+intents.dm_messages = True  # Enable DMs
+intents.direct_messages = True  # Enable DM intents
 
 bot = commands.Bot(command_prefix=BOT_PREFIX, intents=intents, help_command=commands.DefaultHelpCommand())
 
@@ -137,6 +140,7 @@ bot.config = {
     'feature_daily': FEATURE_DAILY_ENABLED,
     'feature_stats': FEATURE_STATS_ENABLED,
     'feature_slash': FEATURE_SLASH_COMMANDS,
+    'feature_dm': FEATURE_DM_SUPPORT,
     'cache_timeout': CACHE_TIMEOUT,
     'bot_owner_id': BOT_OWNER_ID,
 }
@@ -183,8 +187,11 @@ async def on_ready():
         else:
             logger.info('⚠️  Slash commands disabled')
         
+        if FEATURE_DM_SUPPORT:
+            logger.info('💬 DM support: enabled')
+        
         logger.info('\n' + '='*50)
-        logger.info('Bot is ready! Use commands in Discord.')
+        logger.info('Bot is ready! Use commands in Discord or DMs.')
         logger.info('='*50 + '\n')
     except Exception as e:
         logger.error(f'Error in on_ready: {e}')
@@ -207,33 +214,52 @@ async def on_guild_remove(guild):
         logger.error(f'Error in on_guild_remove: {e}')
 
 @bot.event
-async def on_command_error(ctx, error):
-    """Handle command errors"""
+async def on_message(message):
+    """Handle messages - allow DMs"""
+    # Ignore bot messages
+    if message.author.bot:
+        return
+    
+    # Process commands (works in both guilds and DMs)
     try:
+        await bot.process_commands(message)
+    except Exception as e:
+        logger.error(f'Error processing message: {e}')
+
+@bot.event
+async def on_command_error(ctx, error):
+    """Handle command errors in both guilds and DMs"""
+    try:
+        # Check if in DM
+        is_dm = isinstance(ctx.channel, discord.DMChannel)
+        
         if isinstance(error, commands.CommandNotFound):
-            await ctx.send("❌ Command not found! Use `!help` to see all commands.")
+            await ctx.send("🐾 Use `!help` to see all commands.")
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"❌ Missing argument: `{error.param}`")
         elif isinstance(error, commands.MissingPermissions):
-            await ctx.send("❌ You don't have permission to use this command!")
+            if not is_dm:
+                await ctx.send("❌ You don't have permission!")
         elif isinstance(error, commands.BotMissingPermissions):
-            perms = ', '.join(error.missing_perms)
-            await ctx.send(f"❌ I don't have permission: {perms}")
+            if not is_dm:
+                perms = ', '.join(error.missing_perms)
+                await ctx.send(f"❌ I don't have permission: {perms}")
         elif isinstance(error, commands.NoPrivateMessage):
-            await ctx.send("❌ This command can only be used in servers.")
+            await ctx.send("❌ This command only works in servers.")
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send(f"⚠️  Try again in {error.retry_after:.1f}s")
         else:
-            logger.error(f'Unhandled command error: {type(error).__name__}: {error}')
-            await ctx.send(f"❌ An unexpected error occurred. Check logs.")
+            logger.error(f'Command error: {type(error).__name__}: {error}')
+            await ctx.send(f"❌ Error occurred. Check logs.")
     except discord.errors.Forbidden:
-        logger.warning(f'Bot cannot send message to {ctx.guild.name}')
+        # Can't send message (likely in DM with no permission)
+        logger.warning(f'Cannot send error message to {ctx.author}')
     except Exception as e:
         logger.error(f'Error in on_command_error: {e}')
 
 @bot.event
 async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
-    """Handle slash command errors"""
+    """Handle slash command errors in both guilds and DMs"""
     try:
         if not interaction.response.is_done():
             await interaction.response.send_message(f"❌ Error: {str(error)[:100]}", ephemeral=True)

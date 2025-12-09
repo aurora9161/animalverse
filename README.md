@@ -13,13 +13,17 @@
 # Clone repo
 git clone https://github.com/aurora9161/animalverse.git && cd animalverse
 
-# Setup .env
-cp .env.example .env
-# Edit .env - add your Discord token (REQUIRED)
-# Everything else is optional with sensible defaults
-
-# Install & run
+# Install dependencies
 pip install -r requirements.txt
+
+# Option 1: Set token in main.py (simplest)
+# Edit main.py line ~11: DISCORD_TOKEN = "your_token_here"
+
+# Option 2: Use .env file (optional)
+# cp .env.example .env
+# Edit .env: DISCORD_TOKEN=your_token
+
+# Run bot
 python main.py
 ```
 
@@ -27,55 +31,52 @@ python main.py
 
 ---
 
-## 📻 Configuration (.env)
+## 📻 Configuration
 
-All settings in one file: `.env`
+### All Settings in `main.py`
 
-### Required
-```env
-DISCORD_TOKEN=your_bot_token
-```
+Open `main.py` and edit the configuration section (lines 8-50):
 
-### Common Customization
-```env
-# Bot settings
-BOT_PREFIX=!                          # Command prefix
-BOT_STATUS=watching 🐾 AnimalVerse # Bot status
+```python
+# ==================== CONFIGURATION ====================
+# Discord Bot Token
+DISCORD_TOKEN = "your_token_here"          # OR leave empty to use .env
+
+# Bot Settings
+BOT_PREFIX = "!"                           # Command prefix
+BOT_STATUS = "watching 🐾 AnimalVerse"  # Bot status
 
 # Features
-FEATURE_DAILY_ENABLED=true           # Daily animal notifications
-FEATURE_STATS_ENABLED=true           # User statistics
-FEATURE_SLASH_COMMANDS=true          # Slash commands
+FEATURE_DAILY_ENABLED = True               # Daily animals
+FEATURE_STATS_ENABLED = True               # User stats
+FEATURE_SLASH_COMMANDS = True              # Slash commands
 
-# Daily animals
-DEFAULT_DAILY_TIME=08:00             # Time for daily animals
-DEFAULT_ANIMALS=                     # Blank = all animals
-ENABLE_DAILY_BY_DEFAULT=false        # Auto-enable for new servers
+# Database
+DATABASE_DIR = "data"                      # Where to save data
+
+# Logging
+LOG_LEVEL = "INFO"                         # INFO, DEBUG, WARNING, ERROR
+LOG_FILE = "bot.log"                       # Log file
+
+# API Keys (optional)
+CATS_API_KEY = ""                          # Leave empty for fallback
+DOGS_API_KEY = ""                          # Leave empty for fallback
 
 # Performance
-API_TIMEOUT=5                        # API timeout (seconds)
-CACHE_TIMEOUT=3600                   # Cache duration
-MAX_CONCURRENT_REQUESTS=5            # Max parallel requests
+API_TIMEOUT = 5                            # Timeout in seconds
+CACHE_TIMEOUT = 3600                       # Cache duration
 ```
 
-### Optional API Keys (Leave Blank to Use Fallbacks)
+### `.env` File (Optional)
+
+If you prefer not to edit `main.py`, create `.env`:
+
 ```env
-CATS_API_KEY=                        # From thecatapi.com
-DOGS_API_KEY=                        # From thedogapi.com
+# Only the token goes here - everything else is in main.py
+DISCORD_TOKEN=your_bot_token_here
 ```
 
-### Advanced
-```env
-DATABASE_DIR=data                    # Database location
-LOG_LEVEL=INFO                       # Logging level
-LOG_FILE=bot.log                     # Log file
-AUTO_BACKUP_DB=true                  # Auto-backup database
-LOAD_COGS=animals,daily,info         # Which cogs to load
-BOT_OWNER_ID=                        # Owner user ID
-SUPPORT_SERVER=https://...           # Support link
-```
-
-**See `.env.example` for all options**
+Leave this blank in `main.py` and it will use `.env` instead.
 
 ---
 
@@ -86,11 +87,11 @@ Cats, Dogs, Foxes, Ducks, Rabbits, Raccoons, Owls, Penguins, Pandas, Koalas, Slo
 
 ### ⭐ Core Features
 - **Dual Commands:** Prefix (`!`) + Slash (`/`) commands
-- **Daily Notifications:** Configurable per-guild scheduling
+- **Daily Notifications:** Configurable per-guild via `!daily` commands
 - **Statistics:** Track users' favorite animals
 - **JSON Database:** No external DB needed
 - **API Fallbacks:** 100% uptime with fallback images
-- **Fully Configurable:** Everything via `.env`
+- **Simple Configuration:** Edit `main.py` or use `.env`
 
 ---
 
@@ -113,15 +114,16 @@ Cats, Dogs, Foxes, Ducks, Rabbits, Raccoons, Owls, Penguins, Pandas, Koalas, Slo
 !ping              # Latency
 ```
 
-### Daily Animals (Admin)
+### Daily Animals Configuration (Commands)
 ```
-!daily                               # Show settings
-!daily enable / disable              # Toggle
-!daily channel #channel              # Set channel
-!daily time 08:00                    # Set time (24-hour)
-!daily animals set cat dog           # Select animals
-!daily animals clear                 # Use all animals
-!daily test                          # Send test
+!daily                               # Show current settings
+!daily enable                        # Enable daily animals
+!daily disable                       # Disable daily animals
+!daily channel #channel              # Set which channel (admin only)
+!daily time 08:00                    # Set time in 24-hour format (admin only)
+!daily animals set cat dog           # Select specific animals (admin only)
+!daily animals clear                 # Use all animals (admin only)
+!daily test                          # Send test daily animal
 ```
 
 ---
@@ -141,7 +143,7 @@ Cats, Dogs, Foxes, Ducks, Rabbits, Raccoons, Owls, Penguins, Pandas, Koalas, Slo
 **Get keys (optional):**
 - Cats: https://thecatapi.com/ (free)
 - Dogs: https://thedogapi.com/ (free)
-- Add to `.env` and restart
+- Add to `main.py` lines 41-42
 
 ---
 
@@ -175,9 +177,9 @@ Cats, Dogs, Foxes, Ducks, Rabbits, Raccoons, Owls, Penguins, Pandas, Koalas, Slo
 
 ```
 animalverse/
-├── main.py                # Bot core + config loading
+├── main.py                # Bot core + ALL configuration here
 ├── requirements.txt       # Dependencies
-├── .env.example          # Configuration template
+├── .env.example          # Optional - only token
 ├── README.md             # This file
 ├── data/                 # JSON databases (auto-created)
 ├── utils/
@@ -194,21 +196,21 @@ animalverse/
 ## 🐛 Troubleshooting
 
 ### Bot doesn't start
-- Check `DISCORD_TOKEN` in `.env`
+- Check `DISCORD_TOKEN` in `main.py` or `.env`
 - Verify token is valid
 - Check Python version: `python --version` (3.8+)
 - Check logs: `python main.py 2>&1 | head -50`
 
 ### Commands don't work
-- Check prefix: `BOT_PREFIX=!` in `.env`
+- Check prefix: `BOT_PREFIX` in `main.py`
 - Verify bot has message permissions
 - Wait 10s for slash commands to sync
 - Restart bot
 
 ### Daily animals not sending
-- Set channel: `!daily channel #channel`
-- Set time: `!daily time 08:00`
-- Enable: `!daily enable`
+- Enable first: `!daily enable`
+- Set channel: `!daily channel #channel` (admin)
+- Set time: `!daily time 08:00` (admin)
 - Test: `!daily test`
 
 ### API errors in logs
@@ -224,57 +226,47 @@ animalverse/
 
 ---
 
-## 🛠️ Setup by Use Case
+## 🛠️ Setup Examples
 
 ### Default (Just Works)
-```bash
-cp .env.example .env
-# Edit .env - add DISCORD_TOKEN
-python main.py
+```python
+# In main.py
+DISCORD_TOKEN = "your_token_here"
+# Everything else uses defaults
 ```
 
 ### Custom Prefix
-```env
-BOT_PREFIX=?
+```python
+BOT_PREFIX = "?"
 ```
 
 ### Disable Daily Animals
-```env
-FEATURE_DAILY_ENABLED=false
-```
-
-### Disable Statistics
-```env
-FEATURE_STATS_ENABLED=false
+```python
+FEATURE_DAILY_ENABLED = False
 ```
 
 ### Premium Images (Optional)
-```env
-CATS_API_KEY=your_key
-DOGS_API_KEY=your_key
+```python
+CATS_API_KEY = "your_key_from_thecatapi.com"
+DOGS_API_KEY = "your_key_from_thedogapi.com"
 ```
 
 ### Custom Database Location
-```env
-DATABASE_DIR=/var/lib/animalverse
-```
-
-### Load Specific Cogs
-```env
-LOAD_COGS=animals,daily
+```python
+DATABASE_DIR = "/var/lib/animalverse"
 ```
 
 ---
 
 ## 📊 Database
 
-**Location:** `data/` (configurable)
+**Location:** `data/` (configurable in `main.py`)
 
 **Files:**
-- `guild_settings.json` - Per-guild config
+- `guild_settings.json` - Per-guild config (daily settings)
 - `user_stats.json` - User statistics
 
-**Manual backup:**
+**Backup:**
 ```bash
 cp -r data/ data.backup/
 ```
@@ -295,18 +287,27 @@ python main.py
 ```
 
 **Log file:**
-Configurable in `.env`
-```env
-LOG_FILE=bot.log
-LOG_LEVEL=INFO
+Configurable in `main.py`
+```python
+LOG_FILE = "bot.log"
+LOG_LEVEL = "INFO"
 ```
 
 ---
 
 ## 🤔 FAQ
 
+**Q: Do I need to edit .env?**
+A: No! Everything is in `main.py`. `.env` is optional.
+
+**Q: Where do I put my bot token?**
+A: In `main.py` line ~11, or in `.env` if you prefer.
+
 **Q: Do I need API keys?**
 A: No! Bot works perfectly without them. Optional for premium images.
+
+**Q: How do I setup daily animals?**
+A: Use commands in Discord: `!daily enable`, `!daily channel #channel`, `!daily time 08:00`
 
 **Q: What if APIs are down?**
 A: Automatic fallback to cached images. Users won't notice.
@@ -314,14 +315,11 @@ A: Automatic fallback to cached images. Users won't notice.
 **Q: Can I run 24/7?**
 A: Yes! v2.1 is production-ready. 99.9% uptime.
 
-**Q: How do I customize everything?**
-A: Edit `.env` file. All options there.
+**Q: How do I change settings?**
+A: Edit `main.py` and restart bot.
 
-**Q: Where are the settings saved?**
-A: JSON files in `data/` directory.
-
-**Q: Can I change settings without restarting?**
-A: Most changes in `.env` require restart. Per-guild settings via `!daily` commands are instant.
+**Q: How do I change daily animals settings?**
+A: Use `!daily` commands - no restart needed!
 
 ---
 
@@ -331,7 +329,7 @@ A: Most changes in `.env` require restart. Per-guild settings via `!daily` comma
 - Discord bot token
 - Internet connection
 - 10MB disk space
-- 5-10 minutes setup time
+- 2 minutes setup time
 
 ---
 
@@ -339,7 +337,7 @@ A: Most changes in `.env` require restart. Per-guild settings via `!daily` comma
 
 - discord.py 2.3.2
 - aiohttp
-- python-dotenv
+- python-dotenv (optional)
 
 ---
 

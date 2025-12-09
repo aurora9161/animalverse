@@ -22,7 +22,7 @@ if not DISCORD_TOKEN or DISCORD_TOKEN == "your_token_here_or_leave_empty_to_use_
         pass
 
 if not DISCORD_TOKEN:
-    raise ValueError("\n❌ DISCORD_TOKEN not found!\nEither:\n1. Put token in main.py line 10\n2. Create .env file with DISCORD_TOKEN=your_token")
+    raise ValueError("\n❌ DISCORD_TOKEN not found!\nEither:\n1. Put token in main.py line 13\n2. Create .env file with DISCORD_TOKEN=your_token")
 
 # ==================== BOT SETTINGS ====================
 BOT_PREFIX = "!"                    # Command prefix
@@ -51,11 +51,8 @@ API_CALL_DELAY = 0.1                # Delay between API calls
 CACHE_TIMEOUT = 3600                # Cache duration in seconds
 MAX_CONCURRENT_REQUESTS = 5         # Max parallel API requests
 
-# ==================== COGS TO LOAD ====================
-LOAD_COGS = ["animals", "daily", "info"]  # Which cogs to load, or None for all
-
 # ==================== BOT OWNER ====================
-BOT_OWNER_ID = None                 # Your Discord user ID (optional)
+BOT_OWNER_ID = None                 # Your Discord user ID (no quotes needed) - Example: 123456789
 
 # ==================== END CONFIGURATION ====================
 
@@ -108,7 +105,7 @@ guild_settings = GuildSettings(db)
 @bot.event
 async def on_ready():
     logger.info(f'\n✅ Bot is online as {bot.user}')
-    logger.info(f'📍 Bot ID: {bot.user.id}')
+    logger.info(f'📋 Bot ID: {bot.user.id}')
     logger.info(f'👥 Guilds: {len(bot.guilds)}')
     
     # Set bot status
@@ -149,19 +146,17 @@ async def on_command_error(ctx, error):
         await ctx.send(f"❌ An error occurred: {str(error)[:100]}")
 
 async def load_cogs():
-    """Load cogs"""
+    """Load all available cogs"""
     cogs_dir = 'cogs'
     if not os.path.exists(cogs_dir):
         os.makedirs(cogs_dir)
     
+    # Get all available cogs
     available_cogs = [f[:-3] for f in os.listdir(cogs_dir) if f.endswith('.py') and not f.startswith('_')]
     
-    # Determine which cogs to load
-    cogs_to_load = LOAD_COGS if LOAD_COGS else available_cogs
+    logger.info(f'\n🔧 Loading all cogs: {available_cogs}')
     
-    logger.info(f'\n🔧 Loading cogs: {cogs_to_load}')
-    
-    for cog_name in cogs_to_load:
+    for cog_name in available_cogs:
         try:
             await bot.load_extension(f'cogs.{cog_name}')
             logger.info(f'✅ Loaded cog: {cog_name}')

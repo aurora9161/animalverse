@@ -132,8 +132,14 @@ class APIHandler:
         ],
     }
 
-    def __init__(self, timeout: int = 5, retry_count: int = 3, cache_hours: int = 1):
-        """Initialize API handler with configuration"""
+    def __init__(self, timeout: int = 5, retry_count: int = 3, cache_hours: int = 0.08):
+        """Initialize API handler with configuration
+        
+        Args:
+            timeout: API timeout in seconds
+            retry_count: Number of retries for failed requests
+            cache_hours: Cache duration in hours (default 0.08 = ~5 minutes for variety)
+        """
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.retry_count = retry_count
         self.cache_duration = timedelta(hours=cache_hours)
@@ -198,10 +204,12 @@ class APIHandler:
 
     async def get_cat_image(self, api_key: str = '') -> str:
         """Get cat image with caching and fallback"""
+        # Check cache first (but prefer API for variety)
         cached = self._get_cache('cat')
-        if cached:
+        if cached and not api_key:
             return cached
 
+        # Try API if key provided - always fetch fresh images
         if api_key:
             try:
                 url = 'https://api.thecatapi.com/v1/images/search'
@@ -217,16 +225,18 @@ class APIHandler:
             except Exception as e:
                 logger.debug(f'Cat API error: {e}')
 
+        # Fallback to random Unsplash image (no caching to ensure variety)
         fallback = random.choice(self.FALLBACK_IMAGES['cat'])
-        self._set_cache('cat', fallback)
         return fallback
 
     async def get_dog_image(self, api_key: str = '') -> str:
         """Get dog image with caching and fallback"""
+        # Check cache first (but prefer API for variety)
         cached = self._get_cache('dog')
-        if cached:
+        if cached and not api_key:
             return cached
 
+        # Try API if key provided - always fetch fresh images
         if api_key:
             try:
                 url = 'https://api.thedogapi.com/v1/images/search'
@@ -242,8 +252,8 @@ class APIHandler:
             except Exception as e:
                 logger.debug(f'Dog API error: {e}')
 
+        # Fallback to random Unsplash image (no caching to ensure variety)
         fallback = random.choice(self.FALLBACK_IMAGES['dog'])
-        self._set_cache('dog', fallback)
         return fallback
 
     async def get_fox_image(self) -> str:
@@ -265,7 +275,6 @@ class APIHandler:
             logger.debug(f'Fox API error: {e}')
 
         fallback = random.choice(self.FALLBACK_IMAGES['fox'])
-        self._set_cache('fox', fallback)
         return fallback
 
     async def get_duck_image(self) -> str:
@@ -287,7 +296,6 @@ class APIHandler:
             logger.debug(f'Duck API error: {e}')
 
         fallback = random.choice(self.FALLBACK_IMAGES['duck'])
-        self._set_cache('duck', fallback)
         return fallback
 
     async def get_wildlife_image(self, animal: str) -> str:
@@ -328,13 +336,12 @@ class APIHandler:
         except Exception as e:
             logger.debug(f'Wildlife API error for {animal}: {e}')
 
-        # Fall back to static images
+        # Fall back to random static image
         fallback = random.choice(self.FALLBACK_IMAGES.get(animal.lower(), self.FALLBACK_IMAGES['cat']))
-        self._set_cache(animal, fallback)
         return fallback
 
     def get_static_image(self, animal: str) -> str:
-        """Get fallback image for any animal (no API)"""
+        """Get random fallback image for any animal (no API, always different)"""
         animal_lower = animal.lower()
         if animal_lower in self.FALLBACK_IMAGES:
             return random.choice(self.FALLBACK_IMAGES[animal_lower])

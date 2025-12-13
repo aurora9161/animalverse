@@ -125,7 +125,6 @@ intents.members = True
 intents.guilds = True
 intents.guild_messages = True
 intents.dm_messages = True  # Enable DMs
-intents.direct_messages = True  # Enable DM intents
 
 bot = commands.Bot(command_prefix=BOT_PREFIX, intents=intents, help_command=commands.DefaultHelpCommand())
 

@@ -45,6 +45,8 @@ class APIHandler:
             'https://images.unsplash.com/photo-1577781210272-61ef8da1b73f?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1567270762171-79799e56aea1?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1497752531616-c3afd9760a11?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1489749798305-4fea3ba63d60?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1551919267-e3d3a3ca0c3f?w=500&h=500&fit=crop',
         ],
         'owl': [
             'https://images.unsplash.com/photo-1539350881572-88f9c8b88cd3?w=500&h=500&fit=crop',
@@ -65,51 +67,68 @@ class APIHandler:
             'https://images.unsplash.com/photo-1534188753412-3be32fe000c9?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1459262838948-3e2de6c3638f?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1514699297258-2e52f35b0882?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?w=500&h=500&fit=crop',
         ],
         'sloth': [
             'https://images.unsplash.com/photo-1551324894-4f4f1a7f0d6e?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1547721064-da6cfb341d50?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=500&h=500&fit=crop',
         ],
         'hedgehog': [
             'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1539571696357-5a69c006ae30?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1580069690842-659ad2dd8f7d?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1587300411515-9a1b1a8c8e12?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1589270050453-a318ebd5f95b?w=500&h=500&fit=crop',
         ],
         'otter': [
             'https://images.unsplash.com/photo-1606856110002-d0991ce78b1c?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1591229728215-2a83dbd60066?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1604651367919-33e0c369ee1e?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=500&fit=crop',
         ],
         'squirrel': [
             'https://images.unsplash.com/photo-1446824653969-c8398aa337df?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1501706362039-c06b2d715385?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1618603068046-a67a5e57b882?w=500&h=500&fit=crop',
         ],
         'deer': [
             'https://images.unsplash.com/photo-1484406566174-9da000fda645?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1434694686742-92029fba1ee3?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1545131493-0d5fdb2b5fa3?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1585470981802-e3b97cbf404c?w=500&h=500&fit=crop',
         ],
         'bear': [
             'https://images.unsplash.com/photo-1551315679-9c6ae9dec224?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1528127269029-c3ee1f0b2c14?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1589656966895-2f33e7653819?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1606614174585-fe31582dc1d7?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1534727245386-c7a1a6cb63d4?w=500&h=500&fit=crop',
         ],
         'wolf': [
             'https://images.unsplash.com/photo-1501706362039-c06b2d715385?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1554256505-a3a7a7ae1a0f?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1567270762171-79799e56aea1?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1495241595717-fc142fb73c3d?w=500&h=500&fit=crop',
         ],
         'eagle': [
             'https://images.unsplash.com/photo-1540573133985-87b6da97af72?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1579033461380-adb47c3eb938?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1568641755937-b00d6f7c19bb?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1610003206480-c46a23e8d597?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1607503017546-b3efaa6c2e2f?w=500&h=500&fit=crop',
         ],
         'dolphin': [
             'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=500&h=500&fit=crop',
             'https://images.unsplash.com/photo-1566316284037-86b9e7c6c6ec?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1559827291-72ee46d0d3a0?w=500&h=500&fit=crop',
+            'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=500&h=500&fit=crop',
         ],
     }
 
@@ -158,7 +177,7 @@ class APIHandler:
             for attempt in range(self.retry_count):
                 try:
                     session = await self.get_session()
-                    async with session.get(url, headers=headers or {}) as resp:
+                    async with session.get(url, headers=headers or {}, timeout=self.timeout) as resp:
                         if resp.status == 200:
                             return await resp.text()
                         elif resp.status == 429:  # Rate limited
@@ -179,12 +198,10 @@ class APIHandler:
 
     async def get_cat_image(self, api_key: str = '') -> str:
         """Get cat image with caching and fallback"""
-        # Check cache first
         cached = self._get_cache('cat')
         if cached:
             return cached
 
-        # Try API if key provided
         if api_key:
             try:
                 url = 'https://api.thecatapi.com/v1/images/search'
@@ -200,19 +217,16 @@ class APIHandler:
             except Exception as e:
                 logger.debug(f'Cat API error: {e}')
 
-        # Fallback
         fallback = random.choice(self.FALLBACK_IMAGES['cat'])
         self._set_cache('cat', fallback)
         return fallback
 
     async def get_dog_image(self, api_key: str = '') -> str:
         """Get dog image with caching and fallback"""
-        # Check cache first
         cached = self._get_cache('dog')
         if cached:
             return cached
 
-        # Try API if key provided
         if api_key:
             try:
                 url = 'https://api.thedogapi.com/v1/images/search'
@@ -228,13 +242,12 @@ class APIHandler:
             except Exception as e:
                 logger.debug(f'Dog API error: {e}')
 
-        # Fallback
         fallback = random.choice(self.FALLBACK_IMAGES['dog'])
         self._set_cache('dog', fallback)
         return fallback
 
     async def get_fox_image(self) -> str:
-        """Get fox image with fallback"""
+        """Get fox image from RandomFox API with fallback"""
         cached = self._get_cache('fox')
         if cached:
             return cached
@@ -256,7 +269,7 @@ class APIHandler:
         return fallback
 
     async def get_duck_image(self) -> str:
-        """Get duck image with fallback"""
+        """Get duck image from RandomDuck API with fallback"""
         cached = self._get_cache('duck')
         if cached:
             return cached
@@ -275,6 +288,49 @@ class APIHandler:
 
         fallback = random.choice(self.FALLBACK_IMAGES['duck'])
         self._set_cache('duck', fallback)
+        return fallback
+
+    async def get_wildlife_image(self, animal: str) -> str:
+        """Get wildlife image from Wikimedia API (works for multiple animals)"""
+        cached = self._get_cache(animal)
+        if cached:
+            return cached
+
+        # Map animals to their scientific or common names for API
+        animal_map = {
+            'koala': 'Koala',
+            'bear': 'Bear',
+            'deer': 'Deer',
+            'eagle': 'Eagle',
+            'dolphin': 'Dolphin',
+            'wolf': 'Wolf',
+            'raccoon': 'Raccoon',
+            'hedgehog': 'Hedgehog',
+            'otter': 'Otter',
+            'squirrel': 'Squirrel',
+        }
+
+        animal_name = animal_map.get(animal.lower(), animal.title())
+
+        try:
+            # Try Pixabay-style API alternative or Unsplash API
+            url = f'https://commons.wikimedia.org/w/api.php?action=query&list=allimages&aisort=timestamp&aidir=descending&ailimit=50&aiprop=url&format=json&aifrom={animal_name}'
+            response = await self._fetch_with_retry(url)
+            if response:
+                import json
+                data = json.loads(response)
+                if 'query' in data and 'allimages' in data['query'] and len(data['query']['allimages']) > 0:
+                    # Get random image from results
+                    images = data['query']['allimages']
+                    img_url = random.choice(images)['url']
+                    self._set_cache(animal, img_url)
+                    return img_url
+        except Exception as e:
+            logger.debug(f'Wildlife API error for {animal}: {e}')
+
+        # Fall back to static images
+        fallback = random.choice(self.FALLBACK_IMAGES.get(animal.lower(), self.FALLBACK_IMAGES['cat']))
+        self._set_cache(animal, fallback)
         return fallback
 
     def get_static_image(self, animal: str) -> str:

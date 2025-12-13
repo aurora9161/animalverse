@@ -118,7 +118,7 @@ logger.info(f"  Database: {DATABASE_DIR}")
 logger.info(f"  Log Level: {LOG_LEVEL}")
 logger.info("="*50 + "\n")
 
-# Initialize bot with proper error handling
+# Initialize bot with proper error handling (remove default help command)
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -126,7 +126,8 @@ intents.guilds = True
 intents.guild_messages = True
 intents.dm_messages = True  # Enable DMs
 
-bot = commands.Bot(command_prefix=BOT_PREFIX, intents=intents, help_command=commands.DefaultHelpCommand())
+# Remove default help command to allow custom one
+bot = commands.Bot(command_prefix=BOT_PREFIX, intents=intents, help_command=None)
 
 # Store configuration in bot for cogs to access
 bot.config = {

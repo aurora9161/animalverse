@@ -146,7 +146,7 @@ bot.config = {
 
 # Initialize database with error handling
 try:
-    db = JSONDatabase(database_dir=DATABASE_DIR)
+    db = JSONDatabase(db_dir=DATABASE_DIR)
     guild_settings = GuildSettings(db)
     logger.info(f'💾 Database initialized at {DATABASE_DIR}')
 except Exception as e:

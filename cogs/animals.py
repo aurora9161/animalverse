@@ -17,6 +17,13 @@ class Animals(commands.Cog):
         self.user_stats = UserStats(self.db)
         self.request_count = {}  # Track requests per user
         
+        # Animals that use static images (Unsplash fallbacks)
+        self.static_image_animals = {'sloth', 'otter', 'squirrel', 'panda', 'koala', 'rabbit', 'penguin', 'owl'}
+        # Animals with API support
+        self.api_animals = {'cat', 'dog', 'fox', 'duck'}
+        # Animals using Wikimedia/Wildlife API
+        self.wildlife_animals = {'bear', 'deer', 'eagle', 'dolphin', 'wolf', 'raccoon', 'hedgehog'}
+        
         self.animal_facts = {
             'cat': [
                 "Cats can rotate their ears independently!",
@@ -266,7 +273,7 @@ class Animals(commands.Cog):
             if is_slash and not ctx_or_interaction.response.is_done():
                 await ctx_or_interaction.response.defer()
             
-            # Get image
+            # Get image based on animal type
             image_url = None
             if animal_name == 'cat':
                 image_url = await self.api_handler.get_cat_image(self.bot.config.get('cats_api_key', ''))
@@ -276,10 +283,14 @@ class Animals(commands.Cog):
                 image_url = await self.api_handler.get_fox_image()
             elif animal_name == 'duck':
                 image_url = await self.api_handler.get_duck_image()
+            elif animal_name in self.wildlife_animals:
+                # Use Wikimedia API for wildlife animals
+                image_url = await self.api_handler.get_wildlife_image(animal_name)
             else:
+                # Use static images for remaining animals
                 image_url = self.api_handler.get_static_image(animal_name)
             
-            # Fallback
+            # Fallback if image fetch failed
             if not image_url:
                 image_url = self.api_handler.get_static_image(animal_name)
             
